@@ -19,10 +19,10 @@ func NewNotify(senders ...Sender) (*Notify, error) {
 	n := &Notify{
 		Senders: senders,
 	}
-	errs := n.Send("Monitoring service startup test message")
-	if len(errs) != 0 {
-		return nil, errors.New("NewNotify failed")
-	}
+	// errs := n.Send("Monitoring service startup test message")
+	// if len(errs) != 0 {
+	// 	return nil, errors.New("NewNotify failed")
+	// }
 	return n, nil
 }
 
