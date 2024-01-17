@@ -83,13 +83,15 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 		// check from ssvscan
 		if len(clusterValidators.Validators) > 0 {
 			baseMsg := "[Data From SSVScan API]: "
-			msg := ""
-			opId := 0
 			for _, operator := range clusterValidators.Validators[0].Operators {
-				opId = operator.ID
+				opId := operator.ID
+				msg := ""
 				status, err := GetOperatorStatusFromSSVScan(network, opId)
 				if err != nil {
 					msg = fmt.Sprintf("ssvscan api request failed, err: %s", err.Error())
+					log.Println(msg)
+					notify.Send(msg)
+					continue
 				}
 
 				if !status {
