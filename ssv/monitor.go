@@ -29,7 +29,7 @@ func StartMonitor(shutdown <-chan struct{}) {
 		os.Exit(1)
 	}
 
-	ticker := time.NewTicker(10 * 12 * time.Second) // 1 epoch
+	ticker := time.NewTicker(32 * 12 * time.Second) // 1 epoch
 	for {
 		select {
 		case <-ticker.C:
