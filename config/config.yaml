@@ -1,0 +1,10 @@
+network: holesky
+larkconfig:
+  webhook: https://open.larksuite.com/open-apis/bot/v2/hook/e836xxxxx-xxx-xxx-xxxxxx
+telegramconfig:
+  accesstoken: 665xxxxx:AAAXXXXXXXX-XXX
+  chatid: -413xxxxxxx
+aim: "all" # 23,25
+clusterowner:
+  - 0x34415xxxx
+  - 0xdBCC5xxxx
