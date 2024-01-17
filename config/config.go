@@ -53,7 +53,7 @@ func Init(p string) {
 		os.Exit(1)
 	}
 
-	if conf.LarkConfig.WebHook == "" && conf.TelegramConfig.AccessToken == "" || conf.TelegramConfig.ChatId == "" {
+	if conf.LarkConfig.WebHook == "" && (conf.TelegramConfig.AccessToken == "" || conf.TelegramConfig.ChatId == "") {
 		fmt.Println("At least configure lark or telegram")
 		os.Exit(1)
 	}
