@@ -1,7 +1,6 @@
 package notify
 
 import (
-	"errors"
 	"fmt"
 	"log"
 )
