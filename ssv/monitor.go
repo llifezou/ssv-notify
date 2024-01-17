@@ -108,10 +108,12 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 				}
 
 				if _, ok := reportedOperatorId[opId]; ok {
-					reportedOperatorId[opId] = struct{}{}
-					log.Println(msg)
-					notify.Send(msg)
+					continue
 				}
+				
+				reportedOperatorId[opId] = struct{}{}
+				log.Println(msg)
+				notify.Send(msg)
 			}
 		}
 	}
