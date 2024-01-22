@@ -83,6 +83,7 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 		// check from ssvscan
 		if len(clusterValidators.Validators) > 0 {
 			baseMsg := "[Data From SSVScan API]: "
+			willReport := make(map[int]string)
 			for _, operator := range clusterValidators.Validators[0].Operators {
 				opId := operator.ID
 				msg := ""
@@ -112,10 +113,19 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 				if _, ok := reportedOperatorId[opId]; ok {
 					continue
 				}
-				
+
 				reportedOperatorId[opId] = struct{}{}
+				willReport[opId] = msg
 				log.Println(msg)
-				notify.Send(msg)
+			}
+
+			// If they are all inactive, ssvscan data may be broken.
+			if len(willReport) != len(clusterValidators.Validators[0].Operators) {
+				for _, msg := range willReport {
+					notify.Send(msg)
+				}
+			} else {
+				log.Println("All operators will be reported")
 			}
 		}
 	}
