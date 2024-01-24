@@ -63,8 +63,8 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 				continue
 			}
 
-			badOperator := CheckDuty(validatorDuties.Duties)
-			for _, opId := range badOperator {
+			badOperator, name := CheckDuty(validatorDuties.Duties)
+			for i, opId := range badOperator {
 				if aim != "" && aim != "all" {
 					if !strings.Contains(aim, strconv.Itoa(opId)) {
 						continue
@@ -74,7 +74,7 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 					continue
 				}
 				reportedOperatorId[opId] = struct{}{}
-				msg := fmt.Sprintf("[Data From SSV API]: OperatorId: %d inactive in epech: %d !!!", opId, validatorDuties.Duties[0].Epoch)
+				msg := fmt.Sprintf("[Data From SSV API]: OperatorId: %d (name: %s) inactive in epech: %d !!!", opId, name[i], validatorDuties.Duties[0].Epoch)
 				log.Println(msg)
 				notify.Send(msg)
 			}
@@ -96,11 +96,11 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 				}
 
 				if !status {
-					msg = baseMsg + fmt.Sprintf("OperatorId: %d inactive", opId)
+					msg = baseMsg + fmt.Sprintf("OperatorId: %d (name: %s) inactive", opId, operator.Name)
 				}
 
 				if msg == "" {
-					log.Println(baseMsg + fmt.Sprintf("OperatorId: %d active", opId))
+					log.Println(baseMsg + fmt.Sprintf("OperatorId: %d (name: %s) active", opId, operator.Name))
 					continue
 				}
 

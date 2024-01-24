@@ -116,16 +116,18 @@ func GetValidatorDuties(network, pubKey string) (*ValidatorDutiesInfo, error) {
 	return validatorDutiesInfo, nil
 }
 
-func CheckDuty(duties []Duty) []int {
+func CheckDuty(duties []Duty) ([]int, []string) {
 	var badOperator []int
+	var name []string
 	for _, duty := range duties {
 		for _, operator := range duty.Operators {
 			if operator.Status != "success" {
 				badOperator = append(badOperator, operator.ID)
+				name = append(name, operator.Name)
 			} else {
 				log.Println(fmt.Sprintf("[Data From SSV API]: OperatorId: %d active", operator.ID))
 			}
 		}
 	}
-	return badOperator
+	return badOperator, name
 }
