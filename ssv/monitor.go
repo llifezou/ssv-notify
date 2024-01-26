@@ -49,7 +49,7 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 		if err != nil {
 			msg := fmt.Sprintf("ssv api request failed, GetClusterValidators: %s", err.Error())
 			log.Println(msg)
-			notify.Send(msg)
+			//notify.Send(msg)
 			continue
 		}
 
@@ -59,7 +59,7 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 			if err != nil {
 				msg := fmt.Sprintf("ssv api request failed, GetValidatorDuties: %s", err.Error())
 				log.Println(msg)
-				notify.Send(msg)
+				//notify.Send(msg)
 				continue
 			}
 
@@ -89,9 +89,8 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 				msg := ""
 				status, err := GetOperatorStatusFromSSVScan(network, opId)
 				if err != nil {
-					msg = fmt.Sprintf("ssvscan api request failed, err: %s", err.Error())
-					log.Println(msg)
-					notify.Send(msg)
+					log.Println(fmt.Sprintf("ssvscan api request failed, err: %s", err.Error()))
+					//notify.Send(msg)
 					continue
 				}
 
