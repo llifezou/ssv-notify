@@ -1,31 +1,24 @@
-package ssv
+package operator
 
 import (
 	"fmt"
+	logging "github.com/ipfs/go-log/v2"
 	"github.com/llifezou/ssv-notify/config"
 	"github.com/llifezou/ssv-notify/notify"
-	"github.com/llifezou/ssv-notify/notify/lark"
-	"github.com/llifezou/ssv-notify/notify/telegram"
-	"log"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
-func StartMonitor(shutdown <-chan struct{}) {
-	conf := config.GetConfig()
-	var senders []notify.Sender
-	if conf.LarkConfig.WebHook != "" {
-		senders = append(senders, lark.NewLarkClient(conf.LarkConfig.WebHook))
-	}
-	if conf.TelegramConfig.AccessToken != "" && conf.TelegramConfig.ChatId != "" {
-		senders = append(senders, telegram.NewTelegramClient(conf.TelegramConfig.AccessToken, conf.TelegramConfig.ChatId))
-	}
+var log = logging.Logger("operator-monitor")
 
-	notifyClient, err := notify.NewNotify(senders...)
+func StartOperatorMonitor(shutdown <-chan struct{}) {
+	conf := config.GetConfig()
+
+	notifyClient, err := notify.NewNotify()
 	if err != nil {
-		fmt.Println(err)
+		log.Warn(err)
 		os.Exit(1)
 	}
 
@@ -33,8 +26,8 @@ func StartMonitor(shutdown <-chan struct{}) {
 	for {
 		select {
 		case <-ticker.C:
-			log.Println("Monitoring trigger")
-			monitor(notifyClient, conf.Aim, conf.Network, conf.ClusterOwner)
+			log.Info("Monitoring trigger")
+			monitor(notifyClient, conf.OperatorMonitor.Aim, conf.Network, conf.OperatorMonitor.ClusterOwner)
 		case <-shutdown:
 			return
 		}
@@ -48,8 +41,7 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 		clusterValidators, err := GetClusterValidators(network, owner)
 		if err != nil {
 			msg := fmt.Sprintf("ssv api request failed, GetClusterValidators: %s", err.Error())
-			log.Println(msg)
-			//notify.Send(msg)
+			log.Warn(msg)
 			continue
 		}
 
@@ -58,8 +50,7 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 			validatorDuties, err := GetValidatorDuties(network, validator.PublicKey)
 			if err != nil {
 				msg := fmt.Sprintf("ssv api request failed, GetValidatorDuties: %s", err.Error())
-				log.Println(msg)
-				//notify.Send(msg)
+				log.Warn(msg)
 				continue
 			}
 
@@ -75,7 +66,7 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 				}
 				reportedOperatorId[opId] = struct{}{}
 				msg := fmt.Sprintf("[Data From SSV API]: OperatorId: %d (name: %s) inactive in epech: %d !!!", opId, name[i], validatorDuties.Duties[0].Epoch)
-				log.Println(msg)
+				log.Warn(msg)
 				notify.Send(msg)
 			}
 		}
@@ -89,8 +80,7 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 				msg := ""
 				status, err := GetOperatorStatusFromSSVScan(network, opId)
 				if err != nil {
-					log.Println(fmt.Sprintf("ssvscan api request failed, err: %s", err.Error()))
-					//notify.Send(msg)
+					log.Warn(fmt.Sprintf("ssvscan api request failed, err: %s", err.Error()))
 					continue
 				}
 
@@ -99,7 +89,7 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 				}
 
 				if msg == "" {
-					log.Println(baseMsg + fmt.Sprintf("OperatorId: %d (name: %s) active", opId, operator.Name))
+					log.Info(baseMsg + fmt.Sprintf("OperatorId: %d (name: %s) active", opId, operator.Name))
 					continue
 				}
 
@@ -115,7 +105,7 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 
 				reportedOperatorId[opId] = struct{}{}
 				willReport[opId] = msg
-				log.Println(msg)
+				log.Warn(msg)
 			}
 
 			// If they are all inactive, ssvscan data may be broken.
@@ -124,7 +114,7 @@ func monitor(notify *notify.Notify, aim string, network string, clusterOwner []s
 					notify.Send(msg)
 				}
 			} else {
-				log.Println("All operators will be reported")
+				log.Warn("All operators will be reported, Maybe it’s a third-party data error")
 			}
 		}
 	}

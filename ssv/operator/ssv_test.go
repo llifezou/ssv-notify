@@ -1,4 +1,4 @@
-package ssv
+package operator
 
 import "testing"
 
@@ -16,8 +16,8 @@ func TestGetValidatorDuties(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log(info)
-	bad := CheckDuty(info.Duties)
-	for _, b := range bad {
+	_, names := CheckDuty(info.Duties)
+	for _, b := range names {
 		t.Log(b)
 	}
 

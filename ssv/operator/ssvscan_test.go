@@ -1,4 +1,4 @@
-package ssv
+package operator
 
 import "testing"
 

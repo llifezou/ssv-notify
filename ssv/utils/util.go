@@ -1,4 +1,4 @@
-package ssv
+package utils
 
 import (
 	"crypto/tls"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func httpGet(url string) ([]byte, error) {
+func HttpGet(url string) ([]byte, error) {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}

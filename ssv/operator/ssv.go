@@ -1,9 +1,9 @@
-package ssv
+package operator
 
 import (
 	"encoding/json"
 	"fmt"
-	"log"
+	"github.com/llifezou/ssv-notify/ssv/utils"
 )
 
 var (
@@ -70,7 +70,10 @@ func GetClusterValidators(network, clusterOwner string) (*ClusterValidatorsInfo,
 	var clusterValidators *ClusterValidatorsInfo
 
 	url := fmt.Sprintf(ssvClusterValidatorsUrl, network, clusterOwner)
-	b, err := httpGet(url)
+	b, err := utils.HttpGet(url)
+	if err != nil {
+		return nil, err
+	}
 
 	if err = json.Unmarshal(b, &clusterValidators); err != nil {
 		return nil, err
@@ -107,7 +110,10 @@ func GetValidatorDuties(network, pubKey string) (*ValidatorDutiesInfo, error) {
 	var validatorDutiesInfo *ValidatorDutiesInfo
 
 	url := fmt.Sprintf(ssvValidatorDutiesUrl, network, pubKey)
-	b, err := httpGet(url)
+	b, err := utils.HttpGet(url)
+	if err != nil {
+		return nil, err
+	}
 
 	if err = json.Unmarshal(b, &validatorDutiesInfo); err != nil {
 		return nil, err
@@ -125,7 +131,7 @@ func CheckDuty(duties []Duty) ([]int, []string) {
 				badOperator = append(badOperator, operator.ID)
 				name = append(name, operator.Name)
 			} else {
-				log.Println(fmt.Sprintf("[Data From SSV API]: OperatorId: %d active", operator.ID))
+				log.Info(fmt.Sprintf("[Data From SSV API]: OperatorId: %d active", operator.ID))
 			}
 		}
 	}

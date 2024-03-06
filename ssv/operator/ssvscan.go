@@ -1,8 +1,9 @@
-package ssv
+package operator
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/llifezou/ssv-notify/ssv/utils"
 )
 
 var ssvScanUrl = "https://%sssvscan.io/api/v1/operator/status?id=%d"
@@ -27,7 +28,10 @@ func GetOperatorStatusFromSSVScan(network string, operatorId int) (bool, error) 
 	}
 
 	url := fmt.Sprintf(ssvScanUrl, network, operatorId)
-	b, err := httpGet(url)
+	b, err := utils.HttpGet(url)
+	if err != nil {
+		return false, err
+	}
 
 	if err = json.Unmarshal(b, &operatorStatus); err != nil {
 		return false, err
