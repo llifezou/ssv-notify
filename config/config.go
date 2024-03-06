@@ -8,11 +8,24 @@ import (
 )
 
 type Config struct {
-	Network        string         `json:"network"`
-	LarkConfig     LarkConfig     `json:"larkconfig"`
-	TelegramConfig TelegramConfig `json:"telegramconfig"`
-	Aim            string         `json:"aim"`
-	ClusterOwner   []string       `json:"clusterowner"`
+	Network            string                   `json:"network"`
+	EthRpc             string                   `json:"ethrpc"`
+	LarkConfig         LarkConfig               `json:"larkconfig"`
+	TelegramConfig     TelegramConfig           `json:"telegramconfig"`
+	GmailConfig        GmailConfig              `json:"gmailconfig"`
+	DiscordConfig      DiscordConfig            `json:"discordconfig"`
+	OperatorMonitor    OperatorMonitorConfig    `json:"operatormonitor"`
+	LiquidationMonitor LiquidationMonitorConfig `json:"liquidationmonitor"`
+}
+
+type OperatorMonitorConfig struct {
+	Aim          string   `json:"aim"`
+	ClusterOwner []string `json:"clusterowner"`
+}
+
+type LiquidationMonitorConfig struct {
+	Threshold    uint64   `json:"threshold"`
+	ClusterOwner []string `json:"clusterowner"`
 }
 
 type LarkConfig struct {
@@ -22,6 +35,16 @@ type LarkConfig struct {
 type TelegramConfig struct {
 	AccessToken string `json:"accesstoken"`
 	ChatId      string `json:"chatid"`
+}
+
+type GmailConfig struct {
+	From     string `json:"from"`
+	Password string `json:"password"`
+	To       string `json:"to"`
+}
+
+type DiscordConfig struct {
+	WebHook string `json:"webhook"`
 }
 
 var conf Config
@@ -53,8 +76,11 @@ func Init(p string) {
 		os.Exit(1)
 	}
 
-	if conf.LarkConfig.WebHook == "" && (conf.TelegramConfig.AccessToken == "" || conf.TelegramConfig.ChatId == "") {
-		fmt.Println("At least configure lark or telegram")
+	if conf.LarkConfig.WebHook == "" &&
+		(conf.TelegramConfig.AccessToken == "" || conf.TelegramConfig.ChatId == "") &&
+		conf.GmailConfig.Password == "" &&
+		conf.DiscordConfig.WebHook == "" {
+		fmt.Println("At least configure lark or telegram or gmail or discord")
 		os.Exit(1)
 	}
 }

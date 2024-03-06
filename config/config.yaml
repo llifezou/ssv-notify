@@ -1,10 +1,38 @@
-network: holesky
+# support: mainnet / goerli / holesky
+network: mainnet
+
+# eth execution layer rpc endpoint
+ethrpc: #https://mainnet.infura.io/v3/xxxxxx
+
+# If filled in, the alarm will be sent to lark
 larkconfig:
-  webhook: https://open.larksuite.com/open-apis/bot/v2/hook/e836xxxxx-xxx-xxx-xxxxxx
+  webhook: #https://open.larksuite.com/open-apis/bot/v2/hook/e836xxxxx-xxx-xxx-xxxxxx
+
+# If filled in, the alarm will be sent to telegram
 telegramconfig:
-  accesstoken: 665xxxxx:AAAXXXXXXXX-XXX
-  chatid: -413xxxxxxx
-aim: "all" # 23,25
-clusterowner:
-  - 0x34415xxxx
-  - 0xdBCC5xxxx
+  accesstoken: #665xxxxx:AAAXXXXXXXX-XXX
+  chatid: #-413xxxxxxx
+
+# If filled in, the alarm will be sent to the mailbox
+gmailconfig:
+  from: #xxx@gmail.com
+  password: #'ydtd xxxx xxxx tdxj'
+  to: #xxx@xxxmail.com
+
+# If filled in, the alarm will be sent to discord
+discordconfig:
+  webhook: #https://discord.com/api/webhooks/1214540203973414932/lC9-Wxp3BQ_WxlbOBLCXxxxxxXXXX
+
+# operator monitor: Monitor the operator status of the validator cluster
+operatormonitor:
+  aim: "all" # Use 'all' to monitor all operators; use commas to monitor some operators, such as 23,25
+  clusterowner:
+    - #0x344152eD7110694B004962CD61ddA876559Fd8a4
+    - #0xdBCC5c776E4Ca9AdFBE9f2C341bB32e05f582448
+
+# liquidation monitor: Monitor the balance of the cluster
+liquidationmonitor:
+  threshold: 30 # Operational Runway less than 30 days will trigger an alarm
+  clusterowner:
+    - #0x344152eD7110694B004962CD61ddA876559Fd8a4
+    - #0xdBCC5c776E4Ca9AdFBE9f2C341bB32e05f582448
