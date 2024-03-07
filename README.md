@@ -122,7 +122,7 @@ After config.yaml is configured correctly
 - Liquidation monitor
 
   ```
-  nohup ./ssv-notify liquidation-monitor -c ./config/config.yaml > ./liquidation-monitor.log 2>&1
+  nohup ./ssv-notify liquidation-monitor -c ./config/config.yaml > ./liquidation-monitor.log 2>&1 &
   ```
 
 - Cluster scan
