@@ -2,10 +2,13 @@ package config
 
 import (
 	"fmt"
+	logging "github.com/ipfs/go-log/v2"
 	"github.com/spf13/viper"
 	"os"
 	"path/filepath"
 )
+
+var log = logging.Logger("config")
 
 type Config struct {
 	Network            string                   `json:"network"`
@@ -80,7 +83,12 @@ func Init(p string) {
 		(conf.TelegramConfig.AccessToken == "" || conf.TelegramConfig.ChatId == "") &&
 		conf.GmailConfig.Password == "" &&
 		conf.DiscordConfig.WebHook == "" {
-		fmt.Println("At least configure lark or telegram or gmail or discord")
+		log.Warn("At least configure lark or telegram or gmail or discord")
 		os.Exit(1)
+	}
+
+	if conf.LiquidationMonitor.Threshold < 10 {
+		log.Warnw("config LiquidationMonitor.Threshold is too low, use the default", "default threshold", "10 day")
+		conf.LiquidationMonitor.Threshold = 10
 	}
 }

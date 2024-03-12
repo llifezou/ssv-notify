@@ -102,6 +102,7 @@ func monitor(notify *notify.Notify, startBlock uint64) (error, uint64) {
 
 				log.Warn(msg)
 				notify.Send(msg)
+				continue
 			}
 			log.Infow("Liquidation Monitoring", "clusterOwner", c.Owner.String(), "OperatorIds", operatorIdsToString(c.OperatorIds), "Operational Runway", activeDay)
 		}
