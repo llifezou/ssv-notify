@@ -6,6 +6,8 @@
   - INFO: Does not rely on third-party API, Data comes from eth full node.
 - Scan all clusters
   - INFO: Does not rely on third-party API, Data comes from eth full node.
+- Liquidation bot
+  - INFO: Does not rely on third-party API, Data comes from eth full node.
 
 ## Start
 
@@ -55,6 +57,7 @@ Available Commands:
   alarm-test          Test alarms can be used
   completion          Generate the autocompletion script for the specified shell
   help                Help about any command
+  liquidation-bot     liquidation bot
   liquidation-monitor liquidation monitor
   operator-monitor    operator monitor
   ssv-tools           ssv tools
@@ -124,7 +127,12 @@ After config.yaml is configured correctly
   ```
   nohup ./ssv-notify liquidation-monitor -c ./config/config.yaml > ./liquidation-monitor.log 2>&1 &
   ```
+- Liquidation bot
 
+  ```
+  nohup ./ssv-notify liquidation-bot -c ./config/config.yaml > ./liquidation-bot.log 2>&1 &
+  ```
+  
 - Cluster scan
 
   ```
