@@ -78,6 +78,9 @@ network: mainnet
 # eth execution layer rpc endpoint
 ethrpc: # https://mainnet.infura.io/v3/xxxxxx
 
+# Liquidate wallet private key
+key:
+
 # If filled in, the alarm will be sent to lark
 larkconfig:
   webhook: # https://open.larksuite.com/open-apis/bot/v2/hook/e836xxxxx-xxx-xxx-xxxxxx
