@@ -77,14 +77,14 @@ func ScanAllSSVCluster(dir string) error {
 		balances = append(balances, inactiveClusterBalances...)
 	}
 
-	activeBlocks, activeDays := []uint64{}, []uint64{}
+	runwayBlocks, runwayDays := []uint64{}, []uint64{}
 
 	isPrint := dir == ""
 	var w *tabwriter.Writer
 
 	if isPrint {
 		w = tabwriter.NewWriter(os.Stdout, 8, 4, 2, ' ', 0)
-		fmt.Fprintf(w, "ClusterOwner\tOperatorId\tValidatorCount\tNetworkFeeIndex\tIndex\tActive\tBalance\tLiquidationBlock\tRunway\n")
+		fmt.Fprintf(w, "ClusterOwner\tOperatorId\tValidatorCount\tNetworkFeeIndex\tIndex\tActive\tBalance\tRunwayBlock\tRunwayDay\n")
 	}
 
 	for i, cluster := range clusters {
@@ -95,8 +95,13 @@ func ScanAllSSVCluster(dir string) error {
 		}
 
 		activeBlock, activeDay := CalcLiquidation(feeInfo, cluster, balances[i], curBlock)
-		activeBlocks = append(activeBlocks, activeBlock)
-		activeDays = append(activeDays, activeDay)
+		if activeBlock == 0 {
+			runwayBlocks = append(runwayBlocks, 0)
+		} else {
+			runwayBlocks = append(runwayBlocks, activeBlock-curBlock)
+		}
+
+		runwayDays = append(runwayDays, activeDay)
 
 		if isPrint {
 			fmt.Fprintf(w, "%s\t%s\t%d\t%d\t%v\t%t\t%s\t%d\t%d\t\n", cluster.Owner, operatorIdsToString(cluster.OperatorIds),
@@ -105,7 +110,7 @@ func ScanAllSSVCluster(dir string) error {
 	}
 
 	if !isPrint {
-		return writeToCsv(clusters, activeDays, activeBlocks, dir, conf.Network)
+		return writeToCsv(clusters, runwayDays, runwayBlocks, dir, conf.Network)
 	}
 
 	if isPrint {
@@ -159,9 +164,10 @@ func ScanClusterInfo(startBlock uint64) ([]Cluster, uint64, error) {
 			Topics:    [][]common.Hash{{ValidatorAddedTopic, ValidatorRemovedTopic, ClusterDepositedTopic, ClusterWithdrawnTopic, ClusterLiquidatedTopic, ClusterReactivatedTopic}},
 		}
 
+		log.Infow("scan block", "fromBlock", fromBlock, "nextBlock", nextBlock)
+
 		fromBlock = nextBlock
 
-		log.Infow("scan block", "fromBlock", fromBlock, "nextBlock", nextBlock)
 		addLogs, err := eth1Client.FilterLogs(context.Background(), filter)
 		if err != nil {
 			continue
@@ -254,7 +260,7 @@ func writeToCsv(clusterInfos []Cluster, runways, activeBlocks []uint64, dir, net
 	writer := csv.NewWriter(file)
 	defer writer.Flush()
 
-	header := []string{"clusterOwner", "operatorId", "validatorCount", "networkFeeIndex", "index", "active", "balance", "liquidationBlock", "runway"}
+	header := []string{"clusterOwner", "operatorId", "validatorCount", "networkFeeIndex", "index", "active", "balance", "runwayBlock", "runwayDay"}
 	err = writer.Write(header)
 	if err != nil {
 		return err

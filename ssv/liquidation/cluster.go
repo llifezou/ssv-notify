@@ -5,11 +5,32 @@ import (
 	"github.com/llifezou/ssv-notify/ssv/utils"
 	"math/big"
 	"strings"
+	"sync"
 )
 
 var clustersMap = make(map[string]map[string]Cluster, 0)
+var lk sync.RWMutex
+
+func GetClusters() []Cluster {
+	lk.RLock()
+	defer lk.RUnlock()
+
+	var clusters = []Cluster{}
+	for _, cMap := range clustersMap {
+		for _, c := range cMap {
+			clusters = append(clusters, c)
+		}
+	}
+
+	return clusters
+}
 
 func GetClusterOfOwner(owner string) []Cluster {
+	lk.RLock()
+	defer lk.RUnlock()
+
+	owner = strings.ToLower(owner)
+
 	var clusters = []Cluster{}
 	for _, cluster := range clustersMap[owner] {
 		c := cluster
@@ -19,11 +40,21 @@ func GetClusterOfOwner(owner string) []Cluster {
 	return clusters
 }
 
-func GetSSVCluster(startBlock uint64) (uint64, error) {
+func GetClusterOfOwnerAndOperators(owner, operatorIds string) Cluster {
+	lk.RLock()
+	defer lk.RUnlock()
+	owner = strings.ToLower(owner)
+	return clustersMap[owner][operatorIds]
+}
+
+func ScanSSVCluster(startBlock uint64) (uint64, error) {
 	allClusters, endBlock, err := ScanClusterInfo(startBlock)
 	if err != nil {
 		return 0, err
 	}
+
+	lk.Lock()
+	defer lk.Unlock()
 
 	for _, cluster := range allClusters {
 		owner := strings.ToLower(cluster.Owner.String())
@@ -90,7 +121,7 @@ func GetSSVFeeInfo(operatorIds []uint64) (*FeeInfo, error) {
 		return nil, err
 	}
 
-	log.Info("multicall aggregate: getSSVFeeInfo")
+	log.Infow("multicall aggregate: getSSVFeeInfo", "operatorIds", operatorIdsToString(operatorIds))
 	outs, err := multiCall.MulticallCaller.Aggregate(nil, callStructs)
 	if err != nil {
 		return nil, err
@@ -157,6 +188,7 @@ func GetClustersBalance(clusters []Cluster) ([]*big.Int, error) {
 	for _, cs := range batchCluster {
 		var callStructs = make([]utils.Struct0, 0)
 		for _, c := range cs {
+			log.Infow("getClustersBalance: pack", "Owner", c.Owner, "OperatorIds", operatorIdsToString(c.OperatorIds), "Cluster", c.Cluster)
 			data, err := ssvNetworkViewABI.Methods[getBalance].Inputs.Pack(c.Owner, c.OperatorIds, c.Cluster)
 			if err != nil {
 				return nil, err

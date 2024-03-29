@@ -13,6 +13,7 @@ var log = logging.Logger("config")
 type Config struct {
 	Network            string                   `json:"network"`
 	EthRpc             string                   `json:"ethrpc"`
+	Key                string                   `json:"key"`
 	LarkConfig         LarkConfig               `json:"larkconfig"`
 	TelegramConfig     TelegramConfig           `json:"telegramconfig"`
 	GmailConfig        GmailConfig              `json:"gmailconfig"`
@@ -76,6 +77,11 @@ func Init(p string) {
 	err = v.Unmarshal(&conf)
 	if err != nil {
 		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	if conf.Network != "mainnet" && conf.Network != "holesky" {
+		log.Warn("the network only support mainnet / holesky")
 		os.Exit(1)
 	}
 

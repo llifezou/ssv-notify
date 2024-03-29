@@ -37,7 +37,7 @@ func main() {
 	config.Init(configPath)
 
 	ssvToolsCmd.AddCommand(scanClusterCmd)
-	rootCmd.AddCommand(operatorMonitorCmd, liquidationMonitorCmd, ssvToolsCmd, AlarmTestCmd)
+	rootCmd.AddCommand(operatorMonitorCmd, liquidationMonitorCmd, liquidationBotCmd, ssvToolsCmd, AlarmTestCmd)
 
 	_ = rootCmd.Execute()
 }
@@ -112,5 +112,24 @@ var AlarmTestCmd = &cobra.Command{
 			log.Warn(err)
 		}
 		notifyClient.Send("alarm test!")
+	},
+}
+
+var liquidationBotCmd = &cobra.Command{
+	Use:     "liquidation-bot",
+	Short:   "liquidation bot",
+	Example: "./ssv-notify liquidation-bot",
+	Run: func(cmd *cobra.Command, args []string) {
+		log.Info("liquidation bot start")
+
+		var shutdown = make(chan struct{})
+		go liquidation.StartLiquidationBot(shutdown)
+
+		quit := make(chan os.Signal)
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+		<-quit
+		close(shutdown)
+
+		log.Info("liquidation bot shutting down")
 	},
 }

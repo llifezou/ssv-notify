@@ -47,7 +47,7 @@ func monitor(notify *notify.Notify, startBlock uint64) (error, uint64) {
 	}
 	defer cancel()
 
-	endBlock, err := GetSSVCluster(startBlock)
+	endBlock, err := ScanSSVCluster(startBlock)
 	if err != nil {
 		log.Warnw("GetSSVCluster", "err", err)
 		return err, startBlock

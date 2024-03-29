@@ -12,9 +12,6 @@ var (
 	mainnetSSVNetworkAddr     = common.HexToAddress("0xDD9BC35aE942eF0cFa76930954a156B3fF30a4E1")
 	mainnetSSVNetworkViewAddr = common.HexToAddress("0xafE830B6Ee262ba11cce5F32fDCd760FFE6a66e4")
 
-	goerliSSVNetworkAddr     = common.HexToAddress("0xC3CD9A0aE89Fff83b71b58b6512D43F8a41f363D")
-	goerliSSVNetworkViewAddr = common.HexToAddress("0xAE2C84c48272F5a1746150ef333D5E5B51F68763")
-
 	holeskySSVNetworkAddr     = common.HexToAddress("0x38A4794cCEd47d3baf7370CcC43B560D3a1beEFA")
 	boleskySSVNetworkViewAddr = common.HexToAddress("0x352A18AEe90cdcd825d1E37d9939dCA86C00e281")
 )
@@ -77,11 +74,20 @@ func getSSVNetworkAddrs(network string) (ssvNetwork common.Address, ssvNetworkVi
 	switch strings.ToLower(network) {
 	case "mainnet":
 		return mainnetSSVNetworkAddr, mainnetSSVNetworkViewAddr, nil
-	case "goerli":
-		return goerliSSVNetworkAddr, goerliSSVNetworkViewAddr, nil
 	case "holesky":
 		return holeskySSVNetworkAddr, boleskySSVNetworkViewAddr, nil
 	default:
 		return common.Address{}, common.Address{}, errors.New("the network does not support")
+	}
+}
+
+func getChainId(network string) int64 {
+	switch strings.ToLower(network) {
+	case "mainnet":
+		return 1
+	case "holesky":
+		return 17000
+	default:
+		return 0
 	}
 }

@@ -14,5 +14,5 @@ func TestMonitor(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	monitor(notifyClient)
+	monitor(notifyClient, 0)
 }

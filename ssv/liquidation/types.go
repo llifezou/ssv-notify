@@ -17,11 +17,3 @@ type Cluster struct {
 	OperatorIds []uint64
 	Cluster     ISSVNetworkCoreCluster
 }
-
-type ISSVNetworkCoreCluster struct {
-	ValidatorCount  uint32
-	NetworkFeeIndex uint64
-	Index           uint64
-	Active          bool
-	Balance         *big.Int
-}
