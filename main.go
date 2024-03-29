@@ -34,7 +34,6 @@ func init() {
 
 func main() {
 	_ = logging.SetLogLevel("*", "INFO")
-	config.Init(configPath)
 
 	ssvToolsCmd.AddCommand(scanClusterCmd)
 	rootCmd.AddCommand(operatorMonitorCmd, liquidationMonitorCmd, liquidationBotCmd, ssvToolsCmd, AlarmTestCmd)
@@ -47,6 +46,8 @@ var liquidationMonitorCmd = &cobra.Command{
 	Short:   "liquidation monitor",
 	Example: "./ssv-notify liquidation-monitor",
 	Run: func(cmd *cobra.Command, args []string) {
+		config.Init(configPath)
+
 		log.Info("liquidation monitor service start")
 
 		var shutdown = make(chan struct{})
@@ -66,6 +67,8 @@ var operatorMonitorCmd = &cobra.Command{
 	Short:   "operator monitor",
 	Example: "./ssv-notify operator-monitor",
 	Run: func(cmd *cobra.Command, args []string) {
+		config.Init(configPath)
+
 		log.Info("operator monitor service start")
 
 		var shutdown = make(chan struct{})
@@ -93,6 +96,8 @@ var scanClusterCmd = &cobra.Command{
 	Short:   "Scan cluster and calculate operational runway",
 	Example: "./ssv-notify ssv-tools scan-cluster",
 	Run: func(cmd *cobra.Command, args []string) {
+		config.Init(configPath)
+
 		log.Info("Start scanning")
 		err := liquidation.ScanAllSSVCluster(dir)
 		if err != nil {
@@ -106,6 +111,8 @@ var AlarmTestCmd = &cobra.Command{
 	Short:   "Test alarms can be used",
 	Example: "./ssv-notify alarm-test",
 	Run: func(cmd *cobra.Command, args []string) {
+		config.Init(configPath)
+
 		log.Info("Start alarm test")
 		notifyClient, err := notify.NewNotify()
 		if err != nil {
@@ -120,6 +127,8 @@ var liquidationBotCmd = &cobra.Command{
 	Short:   "liquidation bot",
 	Example: "./ssv-notify liquidation-bot",
 	Run: func(cmd *cobra.Command, args []string) {
+		config.Init(configPath)
+
 		log.Info("liquidation bot start")
 
 		var shutdown = make(chan struct{})
