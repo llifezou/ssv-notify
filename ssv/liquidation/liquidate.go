@@ -31,7 +31,7 @@ func CalcLiquidation(feeInfo *FeeInfo, cluster Cluster, curBalance *big.Int, cur
 	liquidationThreshold := big.NewInt(0).Mul(perLiquidationThreshold, big.NewInt(int64(cluster.Cluster.ValidatorCount)))
 
 	if curBalance.Cmp(liquidationThreshold) > 0 {
-		activeBalance := big.NewInt(0).Sub(curBalance, feeInfo.MinimumLiquidationCollateral)
+		activeBalance := big.NewInt(0).Sub(curBalance, liquidationThreshold)
 
 		preValidatorBalance := big.NewInt(0).Div(activeBalance, big.NewInt(int64(cluster.Cluster.ValidatorCount)))
 		if preValidatorBalance.Uint64() == 0 {
